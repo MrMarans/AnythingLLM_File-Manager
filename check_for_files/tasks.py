@@ -92,9 +92,9 @@ class FileScanner:
 
     def _check_subfolder(self,directory, main_folder, first_run):
         try:
-            # Konvertiere den Eingabepfad in ein Path-Objekt
+            # Convert  the input path to a Path object
             directory_path = Path(directory)
-            # Liste alle Dateien im Verzeichnis
+            # List all files in the directory
             for file_path in directory_path.iterdir():
                 file_name = file_path.name
                 image_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp')
@@ -124,9 +124,9 @@ class FileScanner:
 
     def _file_in_db_or_updated(self, file_name, file_path, main_folder):
         file_info = self._is_File_In_DB(file_name, file_path)
-        if file_info is None:  # Wenn die Datei NICHT in der DB ist
+        if file_info is None:  # If file is not in the DB
             self.files_to_add.append([file_path, main_folder.lower().replace(" ", "-"), file_name])
-        else:  # Wenn die Datei in der DB ist
+        else:  # If file is in the DB
             if self._file_Changed(file_info, file_path):
                 self.files_that_changed.append([file_path, main_folder.lower().replace(" ", "-"), file_name])
                 if self.verbose: print(f"File {file_name} has changed.")
@@ -134,17 +134,17 @@ class FileScanner:
     def _is_File_In_DB(self,file_name, file_path):
         if self.verbose: print(f"Checking if file {file_name} in is in the DB")
         try:
-            # Normalisiere den Pfad mit pathlib
+            # Normalize the path with pathlib
             normalized_path = Path(file_path).resolve()
             file_info = FileInfo.objects.filter(
                 filename=file_name, 
                 absolute_path=str(normalized_path)
             ).first()
             
-            if file_info is not None:  # Wenn ein Objekt gefunden wurde
+            if file_info is not None:  # If an object is found
                 if self.verbose: print(f"File {file_name} is in the DB")
-                return file_info  # Gib das FileInfo Objekt zurück
-            else:  # Wenn kein Objekt gefunden wurde (None)
+                return file_info  # Return the FileInfo object
+            else:  # If no object is found (None)
                 if self.verbose: print(f"File {file_name} is not in the DB")
                 return None
         except Exception as e:
@@ -231,9 +231,9 @@ class AnythingLLM_API_Client:
 
     def update(self, files_to_add, files_that_changed, files_got_deleted ):
         try:
-            self.add_files_to_anythingLLM(files_to_add)
             self.delete_files_from_anythingLLM(files_got_deleted)
             self.update_files_in_anythingLLM(files_that_changed)
+            self.add_files_to_anythingLLM(files_to_add)
             self.update_workspace_embeddings(self.update_embeddings)
             self.delete_unused_workspaces()
             self.delete_unused_folders()
