@@ -375,6 +375,11 @@ class AnythingLLM_API_Client:
         # Then we make an API call for each workspace to update the embeddings.
         # -----------------------------
         try:
+            # Check if CREATE_WORKSPACES is enabled and print log message if not
+            if not (os.getenv("CREATE_WORKSPACES", "true").lower() in ("1", "true", "yes")):
+                if self.verbose:
+                    print(f"Skipping workspace creation because CREATE_WORKSPACES is disabled.")
+
             checked_workspaces = []
             workspaces_to_update = {}
             for workspace in list_of_new_embeddings:
@@ -473,6 +478,10 @@ class AnythingLLM_API_Client:
             print(f"Error deleting unused folders: {str(e)}")
 
     def _create_workspace_if_not_exists(self, workspace_name):
+        # Check if CREATE_WORKSPACES is enabled and skip creation if not
+        if not (os.getenv("CREATE_WORKSPACES", "true").lower() in ("1", "true", "yes")):
+            return
+
         try:
             if self.verbose: print(
                 f" {workspace_name} did not exist as a workspace, so we create one"
